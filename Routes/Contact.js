@@ -11,5 +11,5 @@ route.patch('/api/update/:id', controller.update);
 route.get('/api/findID/:id', controller.findID);
 route.get('/api/find', controller.findAll);
 
-route.get('/api/search/:key', controller.search);
+
 module.exports = route

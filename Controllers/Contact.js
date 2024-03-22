@@ -136,13 +136,3 @@ exports.findAll = (req, res)=>{
     
 }
 
-exports.search = async(req, res)=>{
-    let data = await Contact.find({
-        "$or" : [
-            {titre : {$regex:req.params.key}},
-           
-           
-        ]
-    })
-    resp.send(data);
-}
