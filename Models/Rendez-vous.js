@@ -1,35 +1,31 @@
 const mongoose = require("mongoose");
 
 var schema = new mongoose.Schema({
- date: {
+  date: {
     type: Date,
     required: true,
   },
 
- heure:{
+  heure: {
     type: Date,
     required: true,
+  },
 
- },
-
-  nom_docteur:{
-    type: Date,
-  
-
+  nom_docteur: {
+    type: String,
   },
   lieu: {
-    nuit: String,
-  
-  
+    type: String,
   },
- 
+
   objet: {
-    demi_journe: String,
-  
-  
+    type: String,
   },
-
-
+  status: {
+    type: String,
+    enum: ["en attente", "vister"],
+    default: "en attente",
+  },
 });
 
 const rendezVous = mongoose.model("rendez-vous", schema);
