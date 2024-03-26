@@ -3,10 +3,29 @@ const router = express.Router();
 const multer = require('multer');
 const Document = require('../Models/Documents');
 const DocController=require('../Controllers/Document')
-
+router.get("/medicaments/:id", async (req, res) => {
+    try {
+     
+      const { id } = req.params;
+  
+      
+      const doc = await Document.findById(id);
+  
+     
+      if (!doc) {
+        return res.status(404).json({ message: "doc introuvable" });
+      }
+  
+   
+      res.status(200).json(doc);
+    } catch (error) {
+      console.error("Erreur lors de la recherche du doc par ID :", error);
+      res.status(500).json({ error: "Erreur lors de la recherche du doc par ID" });
+    }
+  });
 
 router.delete('/deleteDoc/:id' , DocController.deleteC)
-router.get('/api/findDocID/:id', DocController.findDocByID);
+
 router.get('/api/findAllDoc', DocController.findAllDoc);
 
 
