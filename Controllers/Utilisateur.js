@@ -44,7 +44,7 @@ const ajoute = (req, res) => {
         Num_tel: req.body.Num_tel,
         age: req.body.age,
         nbr_enfants: req.body.nbr_enfants,
-        image: req.file ? `/uploads/${req.file.filename}` : "", // Vérifiez si un fichier a été téléchargé avant d'accéder à ses propriétés
+        image: req.file ? `http://192.168.43.105:5000/uploads/${req.file.filename}` : "", // Vérifiez si un fichier a été téléchargé avant d'accéder à ses propriétés
       });
 
       await nouveauUtilisateur.save();
@@ -104,6 +104,7 @@ const login = (req, res, next) => {
           token: jwt.sign({ userId: user._id }, "RANDOM_TOKEN_SECRET", {
             expiresIn: "24h",
           }),
+          Data:user
         });
       })
       .catch((error) => res.status(500).json({ error: error.message }));

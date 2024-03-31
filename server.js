@@ -1,18 +1,12 @@
-<<<<<<< HEAD
+
 const express = require("express");
 const mongoConnection = require("./database");
 const userRoutes = require("./Routes/Utilisateur");
 const rendezVousRoutes = require("./Routes/Rendez-vous");
 
-mongoConnection();
-const app = express();
-app.use(express.json());
 
-app.listen(5000, "localhost", () => {
-  console.log("Application connected sur le port 5000...");
-=======
-const express=require('express');
-const mongoConnection=require('./database');
+
+
 const RouteContact=require('./Routes/Contact')
 const Document=require('./Models/Documents')
 const DocumentRoute=require('./Routes/documents')
@@ -25,7 +19,8 @@ app.use(express.json())
 app.use('/', RouteContact)
 app.use('/', DocumentRoute)
 app.use('/', RouteMedicament)
-
+app.use("/api/utlisateur", userRoutes);
+app.use("/api/rendezVous", rendezVousRoutes);
 app.get("/searchDoc/:key", async (req, resp) => {
     let data = await Document.find({
         "$or": [
@@ -57,10 +52,8 @@ app.get("/searchcontact/:key", async (req, resp) => {
 
 
 
-app.listen(5000 , 'localhost',()=>{
-    console.log('Application connected sur le port 5000...');
->>>>>>> 8ec949e4adb6148faaf9ea45545e189c5df1db2f
+app.listen(5000, "192.168.43.105", () => {
+    console.log('Application connectée sur le port 5000...');
 });
 
-app.use("/api/utlisateur", userRoutes);
-app.use("/api/rendezVous", rendezVousRoutes);
+
