@@ -3,8 +3,9 @@ const express = require("express");
 const mongoConnection = require("./database");
 const userRoutes = require("./Routes/Utilisateur");
 const rendezVousRoutes = require("./Routes/Rendez-vous");
-
-
+const bodyParser = require('body-parser');
+require("dotenv").config();
+const cors = require('cors');
 
 
 const RouteContact=require('./Routes/Contact')
@@ -14,6 +15,7 @@ const Contact=require('./Models/Contacts-Médecins')
 const RouteMedicament=require('./Routes/Medicaments')
 const Medicament=require('./Models/Médicaments')
 mongoConnection();
+
 const app =express();
 app.use(express.json())
 app.use('/', RouteContact)
@@ -21,6 +23,13 @@ app.use('/', DocumentRoute)
 app.use('/', RouteMedicament)
 app.use("/api/utlisateur", userRoutes);
 app.use("/api/rendezVous", rendezVousRoutes);
+
+app.use(bodyParser.json({ limit: '500mb' }));
+app.use(bodyParser.urlencoded({ limit: '500mb', extended: true }));
+app.use(cors());
+app.get("/uploads/:image", function (req, res) {
+    res.sendFile(__dirname + "/uploads/" + req.params.image);
+})
 app.get("/searchDoc/:key", async (req, resp) => {
     let data = await Document.find({
         "$or": [

@@ -15,7 +15,8 @@ exports.AddContact = (req,res)=>{
         num_telephone:req.body.num_telephone,
         adresse_doc:req.body.adresse_doc,
         Specialite_docteur:req.body.Specialite_docteur,
-        email:req.body.email
+        email:req.body.email,
+        utilisateur:req.body.utilisateur 
         
     })
 

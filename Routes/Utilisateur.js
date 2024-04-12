@@ -5,15 +5,9 @@ const utilisateur=require('../Models/Utilisatuer')
 const multer = require("multer");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const storage= require('../midleware/upload')
 // Configuration du stockage pour multer
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './uploads/');
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname);
-  }
-});
+
 
 // Initialisation de multer avec le stockage configuré
 const upload = multer({ storage: storage });
@@ -23,15 +17,25 @@ userRoutes.post("/add-user", upload.single("avatar"), async (req, res) => {
   try {
    
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const {
+        nom,
+        prenom,
+        email,
+        password,
+        Num_tel,
+        age,
+        nbr_enfants,
+        avatar
+    }= req.body;
     const nouveauUtilisateur = new utilisateur({
-        nom: req.body.nom,
-        prenom: req.body.prenom,
-        email: req.body.email,
-        password: hashedPassword,
-        Num_tel: req.body.Num_tel,
-        age: req.body.age,
-        nbr_enfants: req.body.nbr_enfants,
-
+        nom,
+        prenom,
+        email,
+        password:hashedPassword,
+        Num_tel,
+        age,
+        nbr_enfants,
+avatar
       });
   
     if(req.file) {

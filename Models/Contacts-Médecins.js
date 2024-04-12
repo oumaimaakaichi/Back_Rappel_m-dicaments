@@ -29,7 +29,10 @@ var schema = new mongoose.Schema({
     },
 
 
-    
+    utilisateur:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Utilisateur'
+    }
    
    
 })
