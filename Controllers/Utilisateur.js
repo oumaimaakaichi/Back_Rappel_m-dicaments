@@ -2,9 +2,13 @@ const utilisateur = require("../Models/Utilisatuer");
 const express = require("express");
 
 const multer = require("multer");
-const bcrypt = require("bcrypt");
+
+const secretKey = "1234567";
 const jwt = require("jsonwebtoken");
 const app = express();
+const nodemailer = require("nodemailer");
+const crypto = require("crypto");
+
 app.use("/uploads", express.static("uploads"));
 
 //app.use("/uploads", express.static("uploads"));
@@ -44,7 +48,9 @@ const ajoute = (req, res) => {
         Num_tel: req.body.Num_tel,
         age: req.body.age,
         nbr_enfants: req.body.nbr_enfants,
-        image: req.file ? `http://192.168.43.105:5000/uploads/${req.file.filename}` : "", // Vérifiez si un fichier a été téléchargé avant d'accéder à ses propriétés
+        image: req.file
+          ? `http://localhost:5000/uploads/${req.file.filename}`
+          : "", // Vérifiez si un fichier a été téléchargé avant d'accéder à ses propriétés
       });
 
       await nouveauUtilisateur.save();
@@ -104,7 +110,7 @@ const login = (req, res, next) => {
           token: jwt.sign({ userId: user._id }, "RANDOM_TOKEN_SECRET", {
             expiresIn: "24h",
           }),
-          Data:user
+          Data: user,
         });
       })
       .catch((error) => res.status(500).json({ error: error.message }));
@@ -173,9 +179,132 @@ const modifier = (req, res) => {
   });
 };
 
+// Configuration de Nodemailer
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "mariemmhiri82@gmail.com",
+    pass: "izcm jpry ncke ifqn",
+  },
+});
+
+// Route pour la demande de réinitialisation de mot de passe
+/*const emailyni = (req, res) => {
+  const { email } = req.body;
+
+  // Générer un token unique
+  const token = crypto.randomBytes(20).toString("hex");
+
+  // Envoyer l'e-mail de réinitialisation
+  transporter.sendMail(
+    {
+      from: "trikiasma31@gmail.com",
+      to: email,
+      subject: "Réinitialisation de mot de passe",
+      text: `Pour réinitialiser votre mot de passe, cliquez sur ce lien: http://votresite.com/reset-password/${token}`,
+    },
+    (error, info) => {
+      if (error) {
+        console.log(error);
+        res.status(500).json({
+          message: "Une erreur est survenue lors de l'envoi de l'e-mail.",
+        });
+      } else {
+        console.log("E-mail envoyé: " + info.response);
+        res.status(200).json({
+          message:
+            "Un e-mail de réinitialisation de mot de passe a été envoyé.",
+        });
+      }
+    }
+  );
+};*/
+
+const updateUserPassword = async (email, newPassword) => {
+  try {
+    // Recherchez l'utilisateur par son adresse e-mail
+    const user = await utilisateur.findOne({ email });
+
+    if (!user) {
+      throw new Error("Utilisateur non trouvé");
+    }
+
+    // Mettez à jour le mot de passe de l'utilisateur
+    user.password = newPassword;
+
+    // Sauvegardez les modifications dans la base de données
+    await user.save();
+  } catch (error) {
+    console.error(
+      "Erreur lors de la mise à jour du mot de passe de l'utilisateur :",
+      error.message
+    );
+    throw error;
+  }
+};
+const bcrypt = require("bcrypt");
+
+const emailyni = (req, res) => {
+  const { email } = req.body;
+
+  // Générer un mot de passe aléatoire
+  const newPassword = generateRandomPassword(); // Vous devez implémenter cette fonction
+
+  // Crypter le nouveau mot de passe
+  bcrypt.hash(newPassword, 10, (err, hashedPassword) => {
+    if (err) {
+      console.error("Erreur lors du cryptage du mot de passe :", err);
+      return res.status(500).json({
+        message: "Erreur lors de la réinitialisation du mot de passe.",
+      });
+    }
+
+    // Mettre à jour le mot de passe de l'utilisateur dans la base de données avec le mot de passe crypté
+    updateUserPassword(email, hashedPassword);
+
+    // Envoyer l'e-mail de réinitialisation
+    transporter.sendMail(
+      {
+        from: "trikiasma31@gmail.com",
+        to: email,
+        subject: "Réinitialisation de mot de passe",
+        text: `Votre mot de passe a été réinitialisé avec succès. Voici votre nouveau mot de passe : ${newPassword}. Pour des raisons de sécurité, veuillez le changer dès que possible.`,
+      },
+      (error, info) => {
+        if (error) {
+          console.log(error);
+          res.status(500).json({
+            message: "Une erreur est survenue lors de l'envoi de l'e-mail.",
+          });
+        } else {
+          console.log("E-mail envoyé: " + info.response);
+          res.status(200).json({
+            message:
+              "Un e-mail de réinitialisation de mot de passe a été envoyé. Veuillez vérifier votre boîte de réception pour obtenir votre nouveau mot de passe.",
+          });
+        }
+      }
+    );
+  });
+};
+
+// Fonction pour générer un mot de passe aléatoire
+const generateRandomPassword = () => {
+  const length = 8; // Longueur du mot de passe
+  const charset =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; // Caractères autorisés
+  let newPassword = "";
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * charset.length);
+    newPassword += charset[randomIndex];
+  }
+  return newPassword;
+};
+
 module.exports = {
   ajoute: ajoute,
   getbyid: getbyid,
   login: login,
   modifier: modifier,
+  emailyni: emailyni,
 };

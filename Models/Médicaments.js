@@ -6,26 +6,27 @@ var schema = new mongoose.Schema({
     required: true,
   },
 
- 
-
   Matin: {
     matin: Boolean,
-    DatePrise:Date
-  
+    DatePrise: String,
   },
   nuit: {
     nuit: Boolean,
-    DatePrise:Date
-  
+    DatePrise: String,
   },
- 
+
   demi_journe: {
     demi_journe: Boolean,
-    DatePrise:Date
-  
+    DatePrise: String,
   },
-
-
+  utilisateur: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Utilisateur",
+  },
+  prendre: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const Medicament = mongoose.model("Medicament", schema);

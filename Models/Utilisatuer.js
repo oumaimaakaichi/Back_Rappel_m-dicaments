@@ -31,6 +31,10 @@ var schema = new mongoose.Schema({
   nbr_enfants: {
     type: Number,
   },
+  utilisateur: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Utilisateur",
+  },
 });
 
 const Utilisateur = mongoose.model("Utilisateur", schema);

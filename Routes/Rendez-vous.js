@@ -15,4 +15,25 @@ rendezVousRoutes.put(
   "/modifRendez-vous/:id",
   rendezVousController.modifRendezVous
 );
+
+rendezVousRoutes.get(
+  "/getbyid/ren/:id",
+  rendezVousController.getbyidrendezVous
+);
+
+rendezVousRoutes.get(
+  "/getbyutlisateur/ut/:utilisateur",
+  rendezVousController.getbyutlisateurrendezVous
+);
+
+rendezVousRoutes.get(
+  "/getbyutlisateur/ut/notife/:utilisateur",
+  rendezVousController.getbyutlisateurrendezVousNotife1
+);
+
+rendezVousRoutes.get(
+  "/getRendez-vous/hier/:utilisateurId",
+  rendezVousController.getRendezHier
+);
+
 module.exports = rendezVousRoutes;
