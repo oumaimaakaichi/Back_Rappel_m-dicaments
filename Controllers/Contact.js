@@ -1,28 +1,25 @@
-var Contact = require("../Models/Contacts-Médecins");
 
-exports.AddContact = (req, res) => {
-  if (!req.body) {
-    res.status(400).send({ message: "Content can not be emtpy!" });
-    return;
-  }
 
-  const contact = new Contact({
-    nom_docteur: req.body.nom_docteur,
-    Prenom_docteur: req.body.Prenom_docteur,
-    num_telephone: req.body.num_telephone,
-    adresse_doc: req.body.adresse_doc,
-    Specialite_docteur: req.body.Specialite_docteur,
-    email: req.body.email,
-    utilisateur: req.body.utilisateur,
-  });
+var Contact = require('../Models/Contacts-Médecins')
 
-  // save user in the database
-  contact
-    .save(contact)
-    .then((data) => {
-      res.status(200).send({
-        message: "jout avec succée",
-      });
+exports.AddContact = (req,res)=>{
+  
+    if(!req.body){
+        res.status(400).send({ message : "Content can not be emtpy!"});
+        return;
+    }
+
+  
+    const contact = new Contact({
+        nom_docteur : req.body.nom_docteur,
+        Prenom_docteur : req.body.Prenom_docteur,
+        num_telephone:req.body.num_telephone,
+        adresse_doc:req.body.adresse_doc,
+        Specialite_docteur:req.body.Specialite_docteur,
+        email:req.body.email,
+        utilisateur:req.body.utilisateur 
+        
+
     })
     .catch((err) => {
       res.status(500).send({

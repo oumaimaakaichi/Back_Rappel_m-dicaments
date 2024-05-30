@@ -5,7 +5,9 @@ const Utilisateur = require("../Models/Utilisatuer"); // Correction du chemin d'
 const multer = require("multer");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+
 const storage = require("../midleware/upload");
+r
 
 // Configuration du stockage pour multer
 // Initialisation de multer avec le stockage configuré
@@ -15,23 +17,34 @@ const upload = multer({ storage: storage });
 userRoutes.post("/add-user", upload.single("avatar"), async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    const { nom, prenom, email, password, Num_tel, age, nbr_enfants, avatar } =
-      req.body;
-    const nouveauUtilisateur = new Utilisateur({
-      // Utilisation du modèle Utilisateur
-      nom,
-      prenom,
-      email,
-      password: hashedPassword,
-      Num_tel,
-      age,
-      nbr_enfants,
-      avatar,
-    });
 
-    if (req.file) {
-      nouveauUtilisateur.avatar =
-        "http:// 192.168.43.116:5000/uploads/" + req.file.filename; // Correction de l'assignation
+   
+    
+
+    const {
+        nom,
+        prenom,
+        email,
+        password,
+        Num_tel,
+        age,
+        nbr_enfants,
+        avatar
+    }= req.body;
+    const nouveauUtilisateur = new utilisateur({
+        nom,
+        prenom,
+        email,
+        password:hashedPassword,
+        Num_tel,
+        age,
+        nbr_enfants,
+avatar
+      });
+  
+    if(req.file) {
+        nouveauUtilisateur.avatar ==  "http://192.168.43.105:5000/uploads/" + req.file.filename; // Vérifie si une image a été téléchargée
+
     }
 
     // Enregistrez le nouvel utilisateur dans la base de données
