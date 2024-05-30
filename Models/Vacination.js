@@ -10,10 +10,6 @@ var schema = new mongoose.Schema({
     type: String,
     required: true,
   },
-
-  nom_docteur: {
-    type: String,
-  },
   lieu: {
     type: String,
   },
@@ -32,6 +28,6 @@ var schema = new mongoose.Schema({
   },
 });
 
-const rendezVous = mongoose.model("rendez-vous", schema);
+const rendezVous = mongoose.model("Vacination", schema);
 
 module.exports = rendezVous;

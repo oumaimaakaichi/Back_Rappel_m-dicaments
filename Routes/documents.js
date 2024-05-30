@@ -1,115 +1,80 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const multer = require('multer');
-const Document = require('../Models/Documents');
-const DocController=require('../Controllers/Document')
-router.get("/medicaments/:id", async (req, res) => {
+const multer = require("multer");
+const Document = require("../Models/Documents");
+const DocController = require("../Controllers/Document");
+
+// Configuration du stockage pour Multer
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    // Dossier de destination pour les fichiers téléchargés
+    cb(null, "./uploads/");
+  },
+  filename: function (req, file, cb) {
+    // Nom du fichier enregistré avec un horodatage pour éviter les doublons
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
+
+// Configuration de Multer avec le stockage défini
+const upload = multer({ storage: storage });
+
+// Route pour ajouter un document avec téléchargement de fichiers
+router.post(
+  "/add-document",
+  upload.fields([
+    { name: "image", maxCount: 1 },
+    { name: "document", maxCount: 1 },
+  ]),
+  async (req, res) => {
     try {
-     
-      const { id } = req.params;
-  
-      
-      const doc = await Document.findById(id);
-  
-     
-      if (!doc) {
-        return res.status(404).json({ message: "doc introuvable" });
+      const { nom_document, utilisateur } = req.body;
+
+      let imagePath = "";
+      let documentPath = "";
+
+      // Vérifier si une image a été téléchargée
+      if (req.files["image"] && req.files["image"][0]) {
+        imagePath =
+          "http:// 192.168.43.116:5000/uploads/" +
+          req.files["image"][0].filename;
       }
-  
-   
-      res.status(200).json(doc);
+
+      // Vérifier si un document a été téléchargé
+      if (req.files["document"] && req.files["document"][0]) {
+        documentPath =
+          "http:// 192.168.43.116:5000/uploads/" +
+          req.files["document"][0].filename;
+      }
+
+      // Créer une nouvelle instance de Document avec les chemins des fichiers téléchargés
+      const newDocument = new Document({
+        nom_document,
+        image: imagePath,
+        document: documentPath,
+        utilisateur,
+      });
+
+      // Enregistrer le document dans la base de données
+      await newDocument.save();
+
+      res.status(201).json({ message: "Document ajouté avec succès" });
     } catch (error) {
-      console.error("Erreur lors de la recherche du doc par ID :", error);
-      res.status(500).json({ error: "Erreur lors de la recherche du doc par ID" });
+      console.error("Erreur lors de l'ajout du document :", error);
+      res.status(500).json({ error: "Échec de l'ajout du document" });
     }
-  });
-
-router.delete('/deleteDoc/:id' , DocController.deleteC)
-
-router.get('/api/findAllDoc', DocController.findAllDoc);
-
-
-
-
-
-
-var storage = multer.diskStorage({
-    destination: function(req , file , cb){
-        cb(null , './uploads/')
-    },
-     filename:function(req,file,cb){
-        cb(null,Date.now()+ '-' + file.originalname) ;
-    }
-})
-
-
-
-
-const upload = multer({
-    storage: storage
+  }
+);
+router.get("/docUser/:utilisateurId", async (req, res) => {
+  try {
+    const contacts = await Document.find({
+      utilisateur: req.params.utilisateurId,
+    });
+    res.json(contacts);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
-
-
-/*router.post('/add-documentt', upload.single("image"), async (req, res) => {
-    try {
-        const { nom_document } = req.body;
-        
-        let imagePath = '';
-        if (req.file) {
-         
-            imagePath = "http://192.168.43.105:5000/uploads/" + req.file.filename;
-        }
-
-       
-        const newDocument = new Document({
-            nom_document,
-            image: imagePath
-        });
-
-    
-        await newDocument.save();
-
-        // Répondre avec un message de succès
-        res.status(201).json({ message: 'Document ajouté avec succès' });
-    } catch (error) {
-        // Gérer les erreurs
-        console.error('Erreur lors de l\'ajout du document :', error);
-        res.status(500).json({ error: 'Échec de l\'ajout du document' });
-    }
-});*/
-router.post('/add-document', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'document', maxCount: 1 }]), async (req, res) => {
-    try {
-        const { nom_document } = req.body;
-        
-        let imagePath = '';
-        let documentPath = '';
-
-        if (req.files['image'] && req.files['image'][0]) {
-            imagePath = "http://192.168.43.105:5000/uploads/" + req.files['image'][0].filename;
-        }
-
-        if (req.files['document'] && req.files['document'][0]) {
-            documentPath = "http://192.168.43.105:5000/uploads/" + req.files['document'][0].filename;
-        }
-
-        const newDocument = new Document({
-            nom_document,
-            image: imagePath,
-            document: documentPath
-        });
-
-        await newDocument.save();
-
-        res.status(201).json({ message: 'Document ajouté avec succès' });
-    } catch (error) {
-        console.error('Erreur lors de l\'ajout du document :', error);
-        res.status(500).json({ error: 'Échec de l\'ajout du document' });
-    }
-});
-
-
-
-
-
+router.delete("/deleteDoc/:id", DocController.deleteC);
 
 module.exports = router;
