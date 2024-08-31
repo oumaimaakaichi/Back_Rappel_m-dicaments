@@ -4,22 +4,21 @@ const multer = require("multer");
 const Document = require("../Models/Documents");
 const DocController = require("../Controllers/Document");
 
-// Configuration du stockage pour Multer
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    // Dossier de destination pour les fichiers téléchargés
+  
     cb(null, "./uploads/");
   },
   filename: function (req, file, cb) {
-    // Nom du fichier enregistré avec un horodatage pour éviter les doublons
+   
     cb(null, Date.now() + "-" + file.originalname);
   },
 });
 
-// Configuration de Multer avec le stockage défini
+
 const upload = multer({ storage: storage });
 
-// Route pour ajouter un document avec téléchargement de fichiers
+
 router.post(
   "/add-document",
   upload.fields([
@@ -33,21 +32,21 @@ router.post(
       let imagePath = "";
       let documentPath = "";
 
-      // Vérifier si une image a été téléchargée
+     
       if (req.files["image"] && req.files["image"][0]) {
         imagePath =
-          "http:// 192.168.43.116:5000/uploads/" +
+          "http://192.168.43.105:5000/uploads/" +
           req.files["image"][0].filename;
       }
 
-      // Vérifier si un document a été téléchargé
+    
       if (req.files["document"] && req.files["document"][0]) {
         documentPath =
-          "http:// 192.168.43.116:5000/uploads/" +
+          "http://192.168.43.105:5000/uploads/" +
           req.files["document"][0].filename;
       }
 
-      // Créer une nouvelle instance de Document avec les chemins des fichiers téléchargés
+     
       const newDocument = new Document({
         nom_document,
         image: imagePath,
@@ -55,7 +54,7 @@ router.post(
         utilisateur,
       });
 
-      // Enregistrer le document dans la base de données
+   
       await newDocument.save();
 
       res.status(201).json({ message: "Document ajouté avec succès" });

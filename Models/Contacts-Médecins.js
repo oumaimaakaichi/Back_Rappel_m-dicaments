@@ -36,7 +36,7 @@ const Contact = mongoose.model("Contact", schema);
    
    
    
-})
+
 
 
 module.exports = Contact;

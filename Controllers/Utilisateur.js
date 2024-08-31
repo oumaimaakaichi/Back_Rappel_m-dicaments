@@ -11,9 +11,7 @@ const crypto = require("crypto");
 
 app.use("/uploads", express.static("uploads"));
 
-//app.use("/uploads", express.static("uploads"));
 
-// Configuration de multer pour le stockage des fichiers téléchargés
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "./uploads");
@@ -25,7 +23,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage }).single("image");
 
-// Fonction pour ajouter un utilisateur
+
 const ajoute = (req, res) => {
   upload(req, res, async (err) => {
     if (err) {
@@ -50,14 +48,11 @@ const ajoute = (req, res) => {
         nbr_enfants: req.body.nbr_enfants,
         image: req.file
           ? `http://localhost:5000/uploads/${req.file.filename}`
-          : "", // Vérifiez si un fichier a été téléchargé avant d'accéder à ses propriétés
+          : "", 
       });
 
       await nouveauUtilisateur.save();
-      /*req.session.message = {
-        type: "success",
-        message: "Utilisateur ajouté avec succès !",
-      };*/
+    
       res.json({
         message: "Utilisateur ajouté avec succès !",
         type: "success",
@@ -128,7 +123,7 @@ const modifier = (req, res) => {
     }
 
     try {
-      // Vérifiez si un utilisateur avec l'ID spécifié existe dans la base de données
+      
       const utilisateurExistant = await utilisateur.findById(req.params.id);
       if (!utilisateurExistant) {
         return res.status(404).json({
@@ -137,7 +132,7 @@ const modifier = (req, res) => {
         });
       }
 
-      // Mettez à jour les champs facultatifs s'ils sont fournis dans la requête
+      
       if (req.body.nom) {
         utilisateurExistant.nom = req.body.nom;
       }
@@ -157,12 +152,12 @@ const modifier = (req, res) => {
         utilisateurExistant.nbr_enfants = req.body.nbr_enfants;
       }
 
-      // Si une nouvelle image est téléchargée, mettez à jour le chemin de l'image
+    
       if (req.file) {
         utilisateurExistant.image = `/uploads/${req.file.filename}`;
       }
 
-      // Enregistrez les modifications dans la base de données
+     
       await utilisateurExistant.save();
 
       res.json({
@@ -179,60 +174,29 @@ const modifier = (req, res) => {
   });
 };
 
-// Configuration de Nodemailer
+
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "mariemmhiri82@gmail.com",
-    pass: "izcm jpry ncke ifqn",
+      user: process.env.GMAIL_USER,
+      pass: process.env.GMAIL_PASS,
   },
 });
 
-// Route pour la demande de réinitialisation de mot de passe
-/*const emailyni = (req, res) => {
-  const { email } = req.body;
-
-  // Générer un token unique
-  const token = crypto.randomBytes(20).toString("hex");
-
-  // Envoyer l'e-mail de réinitialisation
-  transporter.sendMail(
-    {
-      from: "trikiasma31@gmail.com",
-      to: email,
-      subject: "Réinitialisation de mot de passe",
-      text: `Pour réinitialiser votre mot de passe, cliquez sur ce lien: http://votresite.com/reset-password/${token}`,
-    },
-    (error, info) => {
-      if (error) {
-        console.log(error);
-        res.status(500).json({
-          message: "Une erreur est survenue lors de l'envoi de l'e-mail.",
-        });
-      } else {
-        console.log("E-mail envoyé: " + info.response);
-        res.status(200).json({
-          message:
-            "Un e-mail de réinitialisation de mot de passe a été envoyé.",
-        });
-      }
-    }
-  );
-};*/
 
 const updateUserPassword = async (email, newPassword) => {
   try {
-    // Recherchez l'utilisateur par son adresse e-mail
+  
     const user = await utilisateur.findOne({ email });
 
     if (!user) {
       throw new Error("Utilisateur non trouvé");
     }
 
-    // Mettez à jour le mot de passe de l'utilisateur
+ 
     user.password = newPassword;
 
-    // Sauvegardez les modifications dans la base de données
+   
     await user.save();
   } catch (error) {
     console.error(
@@ -247,10 +211,10 @@ const bcrypt = require("bcrypt");
 const emailyni = (req, res) => {
   const { email } = req.body;
 
-  // Générer un mot de passe aléatoire
-  const newPassword = generateRandomPassword(); // Vous devez implémenter cette fonction
 
-  // Crypter le nouveau mot de passe
+  const newPassword = generateRandomPassword();
+
+
   bcrypt.hash(newPassword, 10, (err, hashedPassword) => {
     if (err) {
       console.error("Erreur lors du cryptage du mot de passe :", err);
@@ -259,13 +223,13 @@ const emailyni = (req, res) => {
       });
     }
 
-    // Mettre à jour le mot de passe de l'utilisateur dans la base de données avec le mot de passe crypté
+   
     updateUserPassword(email, hashedPassword);
 
-    // Envoyer l'e-mail de réinitialisation
+   
     transporter.sendMail(
       {
-        from: "trikiasma31@gmail.com",
+        from: "oumaimaakaichi00@gmail.com",
         to: email,
         subject: "Réinitialisation de mot de passe",
         text: `Votre mot de passe a été réinitialisé avec succès. Voici votre nouveau mot de passe : ${newPassword}. Pour des raisons de sécurité, veuillez le changer dès que possible.`,
@@ -288,11 +252,11 @@ const emailyni = (req, res) => {
   });
 };
 
-// Fonction pour générer un mot de passe aléatoire
+
 const generateRandomPassword = () => {
-  const length = 8; // Longueur du mot de passe
+  const length = 8;
   const charset =
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; // Caractères autorisés
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; 
   let newPassword = "";
   for (let i = 0; i < length; i++) {
     const randomIndex = Math.floor(Math.random() * charset.length);
